@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    :root {
+      --color: #000;
+    }
+    body {
+      background-color: var(--bgColor);
+      color: var(--color);
+    }
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+    }
+  </style>
+  <body>
+    <div style="display: flex; justify-content: center; align-items: center">
+      <a href="./one.html" id="two">
+        <img src="./img/mario.png" alt="" height="500px" />
+      </a>
+      <div
+        style="
+          flex: 1;
+          border: solid 1px var(--color);
+          height: 500px;
+          display: flex;
+          justify-content: space-between;
+        "
+      >
+        <span>详细信息</span
+        ><button id="buttonbg" style="height: 20px">更改主题</button>
+      </div>
+    </div>
+    <div style="border: solid 1px var(--color)">内容</div>
+  </body>
+
+  <script>
+    window.onload = function () {
+      if ('startViewTransition' in document) {
+      } else {
+        let childHTML = document.createElement('div')
+        childHTML.innerHTML = '该浏览器不支持startViewTransition'
+        document.querySelector(`body`).appendChild(childHTML)
+      }
+      document.querySelector('#buttonbg').onclick = function (e) {
+        var root = document.documentElement
+        if (document.startViewTransition) {
+          var transition = document.startViewTransition(() => {
+            if (root.style.getPropertyValue('--bgColor') === '#000') {
+              root.style.setProperty('--bgColor', '#fff')
+              root.style.setProperty('--color', '#000')
+            } else {
+              root.style.setProperty('--bgColor', '#000')
+              root.style.setProperty('--color', '#fff')
+            }
+          })
+
+          transition.ready.then(() => {
+            document.documentElement.animate(
+              {
+                clipPath: [
+                  //  `polygon(50% 50%, 0% 100%, 50% 50%, 50% 0%, 50% 50%, 100% 100%)`,
+                  //   `polygon(50% 100%, 0% 100%, 0% 0%, 50% 0%, 100% 0%, 100% 100%)`
+                  `circle(0% at ${e.clientX}px ${e.clientY}px)`,
+                  `circle(200% at ${e.clientX}px ${e.clientY}px)`
+                ]
+              },
+              {
+                duration: 500,
+                pseudoElement: '::view-transition-new(root)'
+              }
+            )
+          })
+        } else {
+          if (root.style.getPropertyValue('--bgColor') === '#000') {
+            root.style.setProperty('--bgColor', '#fff')
+            root.style.setProperty('--color', '#000')
+          } else {
+            root.style.setProperty('--bgColor', '#000')
+            root.style.setProperty('--color', '#fff')
+          }
+        }
+      }
+    }
+  </script>
+</html>

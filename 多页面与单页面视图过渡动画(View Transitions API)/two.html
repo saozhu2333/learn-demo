@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>页面2</title>
+  </head>
+  <style>
+    body {
+      background-color: var(--bgColor);
+      color: var(--color);
+    }
+    @view-transition {
+      navigation: auto;
+    }
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+      }
+    }
+
+    @keyframes fade-out {
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes slide-from-right {
+      from {
+        transform: translateX(30px);
+      }
+    }
+
+    @keyframes slide-to-left {
+      to {
+        transform: translateX(-30px);
+      }
+    }
+
+    ::view-transition-old(root) {
+      /* animation: 90ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+        300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left; */
+
+      /* animation: none; */
+      animation-duration: 500;
+    }
+
+    ::view-transition-new(root) {
+      /* animation: 210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+        300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right; */
+      animation-duration: 500;
+    }
+  </style>
+  <body>
+    <div style="display: flex; justify-content: center; align-items: center">
+      <a href="./one.html" id="two">
+        <img src="./img/mario.png" alt="" height="500px" />
+      </a>
+      <div
+        style="
+          flex: 1;
+          border: solid 1px #000;
+          height: 500px;
+          display: flex;
+          justify-content: space-between;
+        "
+      >
+        <span>详细信息</span>
+      </div>
+    </div>
+    <div style="border: solid 1px #000">内容</div>
+  </body>
+
+  <script>
+    /* // 旧页面逻辑 */
+    window.addEventListener('pageswap', (e) => {
+      /* 判断是否支持 */
+      if (e.viewTransition) {
+        /* //添加视图转换名称 */
+        document.querySelector(`#two img`).style.viewTransitionName = 'avatar2'
+        /* 完成后删除对应名称 */
+        e.viewTransition.finished.then(() => {
+          document.querySelector(`#two img`).style.viewTransitionName = 'none'
+        })
+      }
+    })
+
+    // 新页面逻辑
+    window.addEventListener('pagereveal', (e) => {
+      /* 判断是否支持 */
+      if (e.viewTransition) {
+        /* //添加视图转换名称 */
+        document.querySelector(`#two img`).style.viewTransitionName = 'avatar1'
+        /* 完成后删除对应名称 */
+        e.viewTransition.ready.then(() => {
+          document.querySelector(`#two img`).style.viewTransitionName = 'none'
+        })
+      }
+    })
+  </script>
+</html>

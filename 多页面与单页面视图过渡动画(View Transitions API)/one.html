@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.bootcdn.net/ajax/libs/reseter.css/2.0.0/minireseter.css"
+    />
+    <title>页面1</title>
+  </head>
+  <style>
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      /* 新视图*/
+      animation-duration: 500;
+    }
+    @view-transition {
+      navigation: auto;
+    }
+    .addbotton {
+      width: 50px;
+      height: 50px;
+      border-radius: 25px;
+      background-color: #eef8fd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+    }
+    .itembox {
+      width: 100%;
+      display: flex;
+      /* justify-content: space-evenly; */
+      justify-content: flex-start;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .itembox > li {
+      width: 19%;
+      height: 350px;
+      border-radius: 20px;
+      margin-top: 10px;
+      margin-left: 1%;
+      /* view-transition-name: var(--index); */
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 80px;
+    }
+  </style>
+  <body>
+    <a href="./two.html" id="one">
+      <img src="./img/mario.png" alt="" width="200px" />
+    </a>
+
+    <div class="addbotton">+</div>
+    <ul class="itembox">
+      <li style="background-color: aquamarine; view-transition-name: d1">1</li>
+      <li style="background-color: burlywood" ; view-transition-name:d2;>2</li>
+    </ul>
+  </body>
+</html>
+<script>
+  var index = 3
+  window.onload = function () {
+    if ('startViewTransition' in document) {
+      
+    }else{
+      let childHTML = document.createElement('div')
+      childHTML.innerHTML = '该浏览器不支持startViewTransition'
+      document.querySelector(`body`).appendChild(childHTML)
+    }
+
+    //给每一项添加click删除事件
+    for (
+      let i = 0;
+      i < document.querySelector(`.itembox`).children.length;
+      i++
+    ) {
+      document.querySelector(`.itembox`).children[i].onclick = removeLi
+    }
+
+    //新增item事件
+    document.querySelector(`.addbotton`).onclick = function () {
+      let childHTML = document.createElement('li')
+      var r = Math.floor(Math.random() * 256)
+      var g = Math.floor(Math.random() * 256)
+      var b = Math.floor(Math.random() * 256)
+      childHTML.style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')'
+      childHTML.innerHTML = index
+
+      childHTML.style.viewTransitionName = 'd' + index
+      index++
+      childHTML.onclick = removeLi
+      addLi(childHTML)
+      /* document.querySelector(`.itembox`).appendChild(childHTML) */
+    }
+  }
+  function removeLi(e) {
+    viewTransition(() => {
+      document.querySelector(`.itembox`).removeChild(e.target)
+    })
+  }
+  function addLi(val) {
+    viewTransition(() => {
+      document.querySelector(`.itembox`).appendChild(val)
+    })
+  }
+  /**
+   * @函数功能: 状态动画
+   * @param {*} fun
+   * @出口参数:
+   * @函数备注:
+   */
+  function viewTransition(fun) {
+    if ('startViewTransition' in document) {
+      let transition = document.startViewTransition(() => {
+        fun()
+      })
+      const width = window.innerWidth
+      const height = window.innerHeight
+      const radius = Math.hypot(width, height)
+      transition.ready.then(() => {})
+    } else {
+      fun()
+    }
+  }
+
+  /* // 旧页面逻辑 */
+  window.addEventListener('pageswap', (e) => {
+    console.log()
+    /* 判断是否支持 */
+    if (e.viewTransition) {
+      /* //添加视图转换名称 */
+      document.querySelector(`#one img`).style.viewTransitionName = 'avatar1'
+      /* 完成后删除对应名称 */
+      e.viewTransition.finished.then(() => {
+        document.querySelector(`#one img`).style.viewTransitionName = 'none'
+      })
+    }
+  })
+
+  /* // 新页面逻辑 */
+  window.addEventListener('pagereveal', (e) => {
+    /* 判断是否支持 */
+    if (e.viewTransition) {
+      /* //添加视图转换名称 */
+      document.querySelector(`#one img`).style.viewTransitionName = 'avatar2'
+      /* 完成后删除对应名称 */
+      e.viewTransition.ready.then(() => {
+        document.querySelector(`#one img`).style.viewTransitionName = 'none'
+      })
+    }
+  })
+</script>
